@@ -8,6 +8,8 @@ module.exports = function (opts) {
   opts.tick = 'tick' in opts ? opts.tick : 100
   opts.autostart = 'autostart' in opts ? opts.autostart : true
 
+  var backwardTerminal = process.env.TERM_PROGRAM === 'Apple_Terminal'
+
   opts.out = opts.out || process.stdout
   var autostart = opts.autostart
   var out = opts.out
@@ -39,10 +41,11 @@ module.exports = function (opts) {
     out.write(ansi.cursorShow)
   }
 
+  function display(face, out, back) {
+    out.write(ansi.cursorSavePosition + face + ansi.cursorRestorePosition)
+    if (backwardTerminal) out.write(ansi.cursorBackward())
+  }
+
   return {stop: stop, pause: pause, start: start}
 }
 
-function display(face, out) {
-  out.write(ansi.cursorSavePosition + face + ansi.cursorRestorePosition)
-
-}
